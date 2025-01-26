@@ -3,12 +3,17 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 from enum import Enum
 from datetime import date
+from routers.usuario import usuario_bp
+from routers.task import task_bp
 
 app = Flask(__name__)
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(BASE_DIR, 'db.sqlite')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
+app.register_blueprint(usuario_bp, url_prefix='/usuarios')  
+app.register_blueprint(task_bp, url_prefix='/tareas')  
 
 # Enumeracion de categorias
 class CategoriaEnum(Enum):
@@ -57,7 +62,30 @@ def index():
 
 if __name__ == '__main__':
     with app.app_context():
+        db.drop_all()
         db.create_all()
-        print('Data base created tester')
+        print('Database created successfully')
+
+        # #tester1
+        # usuario = Usuario(nombre_usuario="prueba122", contrasena="12345")
+        # db.session.add(usuario)
+        # db.session.commit()
+
+        # tarea = Task(
+        #     texto_tarea="Esta es una tarea de prueba",
+        #     ID_Usuario=usuario.id,
+        #     categoria=CategoriaEnum.TRABAJO,
+        #     estado=EstadoEnum.EN_PROGRESO,
+        #     fecha_tentativa_finalizacion=date(2025, 1, 31)
+        # )
+        # db.session.add(tarea)
+        # db.session.commit()
+
+        # usuarios = Usuario.query.all()
+        # tareas = Task.query.all()
+        # print("Usuarios:", [u.nombre_usuario for u in usuarios])
+        # print("Tareas:", [t.texto_tarea for t in tareas])
+
     app.run(debug=True)
+
 
