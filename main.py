@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
+from flask_jwt_extended import JWTManager
 import os
 from enum import Enum
 from datetime import date
@@ -10,10 +11,10 @@ app = Flask(__name__)
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(BASE_DIR, 'db.sqlite')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+app.config['JWT_SECRET_KEY'] = 'tu_secret_key_seguro'  # Cambia esto por una clave secreta fuerte
 
-app.register_blueprint(usuario_bp, url_prefix='/usuarios')  
-app.register_blueprint(task_bp, url_prefix='/tareas')  
+db = SQLAlchemy(app)
+jwt = JWTManager(app)
 
 # Enumeracion de categorias
 class CategoriaEnum(Enum):
@@ -55,6 +56,9 @@ class Task(db.Model):
 
     usuario = db.relationship('Usuario', back_populates='tasks')
 
+
+app.register_blueprint(usuario_bp, url_prefix='/usuarios')  
+app.register_blueprint(task_bp, url_prefix='/tareas')  
 
 @app.route('/')
 def index():
