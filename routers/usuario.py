@@ -1,7 +1,8 @@
 from flask import Blueprint, request, jsonify
-from main import db, Usuario
+from extensions import db
+from models import Usuario
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token
 
 usuario_bp = Blueprint('usuario', __name__)
 
@@ -9,7 +10,7 @@ usuario_bp = Blueprint('usuario', __name__)
 @usuario_bp.route('/', methods = ['POST'])
 def crear_usuario():
     data = request.get_json()
-    nombre_usuario = data.get('nombre_usuario')
+    nombre_usuario = data.get('nombre_usuario', "").strip()
     contrasena = data.get('contrasena')
     imagen_perfil = data.get('imagen_perfil')
 
@@ -55,6 +56,6 @@ def iniciar_sesion():
     if not usuario or not check_password_hash(usuario.contrasena, contrasena):
         return jsonify({"message": "Usuario o contraseña incorrectos"}), 401
 
-    access_token = create_access_token(identity=usuario.id)
+    access_token = create_access_token(identity={"id": usuario.id, "nombre_usuario": usuario.nombre_usuario})
     return jsonify({"access_token": access_token}), 200
 
