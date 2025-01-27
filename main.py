@@ -21,6 +21,11 @@ app.register_blueprint(task_bp, url_prefix='/tareas')
 def index():
     return render_template('index.html')
 
+@app.route('/usuarios/registro', methods=['GET'])
+def registro():
+    return render_template('registro.html')
+
+
 if __name__ == '__main__':
     with app.app_context():
         db.drop_all()

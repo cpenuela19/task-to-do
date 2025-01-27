@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio de Sesión</title>
+    <title>Registro</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
 </head>
 <body class="bg-light">
     <div class="container d-flex flex-column justify-content-center align-items-center vh-100">
         <div class="card shadow-lg" style="width: 400px;">
             <div class="card-body">
-                <h2 class="card-title text-center mb-4">Iniciar Sesión</h2>
-                <form id="loginForm" method="POST" action="/usuarios/iniciar-sesion">
+                <h2 class="card-title text-center mb-4">Registro</h2>
+                <form id="registerForm" method="POST" action="/usuarios">
                     <div class="mb-3">
                         <label for="nombre_usuario" class="form-label">Nombre de Usuario</label>
                         <input type="text" class="form-control" id="nombre_usuario" name="nombre_usuario" required>
@@ -20,10 +20,14 @@
                         <label for="contrasena" class="form-label">Contraseña</label>
                         <input type="password" class="form-control" id="contrasena" name="contrasena" required>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
+                    <div class="mb-3">
+                        <label for="imagen_perfil" class="form-label">Imagen de Perfil (opcional)</label>
+                        <input type="text" class="form-control" id="imagen_perfil" name="imagen_perfil" placeholder="URL de imagen">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Registrarse</button>
                 </form>
                 <p class="text-center mt-3">
-                    ¿No tienes cuenta? <a href="/usuarios/registro">Regístrate aquí</a>
+                    ¿Ya tienes cuenta? <a href="/">Inicia sesión</a>
                 </p>
             </div>
         </div>

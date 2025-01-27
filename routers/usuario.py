@@ -9,7 +9,11 @@ usuario_bp = Blueprint('usuario', __name__)
 #Crear un usuario
 @usuario_bp.route('/', methods = ['POST'])
 def crear_usuario():
-    data = request.get_json()
+    if request.is_json:
+        data = request.get_json()
+    else:
+        data = request.form
+
     nombre_usuario = data.get('nombre_usuario', "").strip()
     contrasena = data.get('contrasena')
     imagen_perfil = data.get('imagen_perfil')
@@ -45,7 +49,12 @@ def crear_usuario():
 # Login
 @usuario_bp.route('/iniciar-sesion', methods=['POST'])
 def iniciar_sesion():
-    data = request.get_json()
+
+    if request.is_json:
+        data = request.get_json()
+    else:
+        data = request.form
+
     nombre_usuario = data.get('nombre_usuario')
     contrasena = data.get('contrasena')
 
