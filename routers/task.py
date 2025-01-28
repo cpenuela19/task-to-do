@@ -97,7 +97,7 @@ def crear_tarea():
     db.session.commit()
 
     flash("Tarea creada exitosamente.", "success")
-    return redirect(url_for('task.task.vista_tareas'))
+    return redirect(url_for('task.vista_tareas'))
 
 # Actualizar una tarea
 @task_bp.route('/tareas/<int:id>/actualizar', methods=['POST'])

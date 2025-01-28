@@ -45,13 +45,13 @@
                                 </div>
                                 <div>
                                     <!-- Botón de editar -->
-                                    <form action="/tareas/{{ tarea.id }}/actualizar" method="POST" style="display: inline;">
+                                    <form action="{{ url_for('task.actualizar_tarea', id=tarea.id) }}" method="POST" style="display: inline;">
                                         <input type="hidden" name="texto_tarea" value="{{ tarea.texto_tarea }}">
                                         <input type="hidden" name="estado" value="{{ tarea.estado }}">
                                         <button type="submit" class="btn btn-sm btn-primary">Editar</button>
                                     </form>
                                     <!-- Botón de eliminar -->
-                                    <form action="/tareas/{{ tarea.id }}/eliminar" method="POST" style="display: inline;">
+                                    <form action="{{ url_for('task.eliminar_tarea', id=tarea.id) }}" method="POST" style="display: inline;">
                                         <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
                                     </form>
                                 </div>
@@ -68,7 +68,7 @@
         <div class="card shadow-sm mt-4">
             <div class="card-body">
                 <h3 class="card-title">Crear Tarea</h3>
-                <form action="/tareas/crear-tarea" method="POST">
+                <form action="{{ url_for('task.crear_tarea') }}" method="POST">
                     <div class="mb-3">
                         <label for="texto_tarea" class="form-label">Texto de la Tarea</label>
                         <input type="text" class="form-control" id="texto_tarea" name="texto_tarea" required>
