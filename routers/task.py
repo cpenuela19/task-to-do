@@ -1,9 +1,8 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, flash, redirect, url_for
 from extensions import db
 from models import Task, CategoriaEnum, EstadoEnum, Usuario
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import date
-
 
 task_bp = Blueprint('task', __name__)
 
@@ -11,24 +10,15 @@ task_bp = Blueprint('task', __name__)
 @jwt_required()
 def obtener_tareas(id_usuario):
     usuario = Usuario.query.get_or_404(id_usuario)
-    tareas = Task.query.filter_by(ID_Usuario=id_usuario).all() 
-    return jsonify([
-        {
-            "id": tarea.id,
-            "texto_tarea": tarea.texto_tarea,
-            "fecha_creacion": tarea.fecha_creacion,
-            "fecha_tentativa_finalizacion": tarea.fecha_tentativa_finalizacion,
-            "estado": tarea.estado.value,
-            "categoria": tarea.categoria.value
-        }
-        for tarea in tareas
-    ]), 200
+    tareas = Task.query.filter_by(ID_Usuario=id_usuario).all()
+    flash(f"Mostrando tareas para el usuario {usuario.nombre_usuario}.", "info")
+    return redirect(url_for('vista_tareas'))
 
 @task_bp.route('/tareas', methods=['POST'])
 @jwt_required()
 def crear_tarea():
-    data = request.get_json()
-    user_id = get_jwt_identity()["id"]
+    data = request.form  
+    user_id = get_jwt_identity()
 
     texto_tarea = data.get("texto_tarea")
     fecha_tentativa_finalizacion = data.get("fecha_tentativa_finalizacion")
@@ -36,21 +26,26 @@ def crear_tarea():
     estado = data.get("estado", EstadoEnum.PENDIENTE.value)
 
     if not texto_tarea:
-        return jsonify({"message": "El texto de la tarea es obligatorio"}), 400
+        flash("El texto de la tarea es obligatorio.", "error")
+        return redirect(url_for('vista_tareas'))
 
     if categoria not in [cat.value for cat in CategoriaEnum]:
-        return jsonify({"message": "Categoría inválida"}), 400
+        flash("Categoría inválida.", "error")
+        return redirect(url_for('vista_tareas'))
 
     if estado not in [est.value for est in EstadoEnum]:
-        return jsonify({"message": "Estado inválido"}), 400
+        flash("Estado inválido.", "error")
+        return redirect(url_for('vista_tareas'))
 
     if fecha_tentativa_finalizacion:
         try:
             fecha_tentativa = date.fromisoformat(fecha_tentativa_finalizacion)
             if fecha_tentativa < date.today():
-                return jsonify({"message": "La fecha tentativa no puede ser anterior de hoy"}), 400
+                flash("La fecha tentativa no puede ser anterior a hoy.", "error")
+                return redirect(url_for('vista_tareas'))
         except ValueError:
-            return jsonify({"message": "Fecha tentativa inválida"}), 400
+            flash("Fecha tentativa inválida.", "error")
+            return redirect(url_for('vista_tareas'))
     else:
         fecha_tentativa = None
 
@@ -64,12 +59,13 @@ def crear_tarea():
     db.session.add(nueva_tarea)
     db.session.commit()
 
-    return jsonify({"message": "Tarea creada exitosamente"}), 201
+    flash("Tarea creada exitosamente.", "success")
+    return redirect(url_for('vista_tareas'))
 
-@task_bp.route('/tareas/<int:id>', methods=['PUT'])
+@task_bp.route('/tareas/<int:id>', methods=['POST'])
 @jwt_required()
 def actualizar_tarea(id):
-    data = request.get_json()
+    data = request.form  
     tarea = Task.query.get_or_404(id)
 
     texto_tarea = data.get("texto_tarea")
@@ -79,29 +75,26 @@ def actualizar_tarea(id):
     estado = data.get("estado")
     if estado:
         if estado not in [est.value for est in EstadoEnum]:
-            return jsonify({"message": "Estado inválido"}), 400
+            flash("Estado inválido.", "error")
+            return redirect(url_for('vista_tareas'))
         tarea.estado = EstadoEnum(estado)
 
     db.session.commit()
-    return jsonify({"message": "Tarea actualizada exitosamente"}), 200
+    flash("Tarea actualizada exitosamente.", "success")
+    return redirect(url_for('vista_tareas'))
 
-@task_bp.route('/tareas/<int:id>', methods=['DELETE'])
+@task_bp.route('/tareas/<int:id>', methods=['POST'])
 @jwt_required()
 def eliminar_tarea(id):
     tarea = Task.query.get_or_404(id)
     db.session.delete(tarea)
     db.session.commit()
-    return jsonify({"message": "Tarea eliminada exitosamente"}), 200
+    flash("Tarea eliminada exitosamente.", "success")
+    return redirect(url_for('vista_tareas'))
 
 @task_bp.route('/tareas/<int:id>', methods=['GET'])
 @jwt_required()
 def obtener_tarea_por_id(id):
     tarea = Task.query.get_or_404(id)
-    return jsonify({
-        "id": tarea.id,
-        "texto_tarea": tarea.texto_tarea,
-        "fecha_creacion": tarea.fecha_creacion.strftime('%Y-%m-%d'),
-        "fecha_tentativa_finalizacion": tarea.fecha_tentativa_finalizacion.strftime('%Y-%m-%d') if tarea.fecha_tentativa_finalizacion else None,
-        "estado": tarea.estado.value,
-        "categoria": tarea.categoria.value
-    }), 200
+    flash(f"Tarea '{tarea.texto_tarea}' obtenida con éxito.", "info")
+    return redirect(url_for('vista_tareas'))

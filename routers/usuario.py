@@ -6,7 +6,6 @@ from flask_jwt_extended import create_access_token
 
 usuario_bp = Blueprint('usuario', __name__)
 
-#Crear un usuario
 @usuario_bp.route('/', methods=['POST'])
 def crear_usuario():
     if request.is_json:
@@ -14,7 +13,6 @@ def crear_usuario():
     else:
         data = request.form
 
-    # Validar campos obligatorios
     nombre_usuario = data.get('nombre_usuario', "").strip()
     contrasena = data.get('contrasena')
     imagen_perfil = data.get('imagen_perfil')
@@ -44,13 +42,10 @@ def crear_usuario():
     db.session.add(nuevo_usuario)
     db.session.commit()
 
-    # Generar el token JWT para el usuario registrado
     access_token = create_access_token(identity=str(nuevo_usuario.id))
 
-    # Almacenar el token en la sesión
     session['access_token'] = access_token
 
-    # Mensaje de éxito y redirección a la vista de tareas
     flash("Usuario registrado exitosamente. Bienvenido a tu lista de tareas.", "success")
     return redirect(url_for('vista_tareas'))
 
@@ -66,7 +61,6 @@ def iniciar_sesion():
     nombre_usuario = data.get('nombre_usuario')
     contrasena = data.get('contrasena')
 
-    # Validar credenciales
     if not nombre_usuario or not contrasena:
         flash("Nombre de usuario o contraseña son obligatorios", "error")
         return redirect(url_for('index'))
@@ -76,13 +70,10 @@ def iniciar_sesion():
         flash("Usuario o contraseña incorrectos", "error")
         return redirect(url_for('index'))
 
-    # Crear el token JWT
     access_token = create_access_token(identity=str(usuario.id))
 
 
-    # Almacenar el token en la sesión
     session['access_token'] = access_token
     flash("Inicio de sesión exitoso", "success")
     
-    # Redirigir al usuario a la vista de tareas
     return redirect(url_for('vista_tareas'))

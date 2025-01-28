@@ -31,23 +31,20 @@ def registro():
 
 @app.route('/tareas', methods=['GET'])
 def vista_tareas():
-    # Verificar si el token está en la sesión
     access_token = session.get('access_token')
     if not access_token:
         flash("Debes iniciar sesión para acceder a tus tareas.", "error")
         return redirect(url_for('index'))
 
-    # Decodificar el token JWT
     from flask_jwt_extended import decode_token
     try:
-        user_id = decode_token(access_token)["sub"]  # El ID del usuario (cadena)
+        user_id = decode_token(access_token)["sub"]  
         print(f"ID del usuario autenticado: {user_id}")
     except Exception as e:
         flash("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.", "error")
         print(f"Error al decodificar el token: {e}")
         return redirect(url_for('index'))
 
-    # Obtener las tareas del usuario autenticado
     tareas = Task.query.filter_by(ID_Usuario=int(user_id)).all()
     categorias = [cat.value for cat in CategoriaEnum]
     return render_template('tareas.html', tareas=tareas, categorias=categorias)

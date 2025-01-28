@@ -10,6 +10,22 @@
     <div class="container mt-5">
         <h1 class="text-center mb-4">Mis Tareas</h1>
 
+        <!-- Mensajes flash -->
+        <div class="container mt-3">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="alert-container">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </div>
+
         <!-- Lista de tareas -->
         <div class="card shadow-sm">
             <div class="card-body">
@@ -28,9 +44,10 @@
                                     {% endif %}
                                 </div>
                                 <div>
+                                    <!-- Botón de editar -->
                                     <a href="/tareas/{{ tarea.id }}/editar" class="btn btn-sm btn-primary me-2">Editar</a>
+                                    <!-- Botón de eliminar -->
                                     <form action="/tareas/{{ tarea.id }}" method="POST" style="display: inline;">
-                                        <input type="hidden" name="_method" value="DELETE">
                                         <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
                                     </form>
                                 </div>
@@ -38,7 +55,7 @@
                         {% endfor %}
                     </ul>
                 {% else %}
-                    <p>No tienes tareas registradas.</p>
+                    <p class="text-muted">No tienes tareas registradas.</p>
                 {% endif %}
             </div>
         </div>
