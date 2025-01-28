@@ -29,27 +29,6 @@ def index():
 def registro():
     return render_template('registro.html')
 
-@app.route('/tareas', methods=['GET'])
-def vista_tareas():
-    access_token = session.get('access_token')
-    if not access_token:
-        flash("Debes iniciar sesión para acceder a tus tareas.", "error")
-        return redirect(url_for('index'))
-
-    from flask_jwt_extended import decode_token
-    try:
-        user_id = decode_token(access_token)["sub"]  
-        print(f"ID del usuario autenticado: {user_id}")
-    except Exception as e:
-        flash("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.", "error")
-        print(f"Error al decodificar el token: {e}")
-        return redirect(url_for('index'))
-
-    tareas = Task.query.filter_by(ID_Usuario=int(user_id)).all()
-    categorias = [cat.value for cat in CategoriaEnum]
-    return render_template('tareas.html', tareas=tareas, categorias=categorias)
-
-
 
 if __name__ == '__main__':
     with app.app_context():

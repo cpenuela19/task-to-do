@@ -47,7 +47,7 @@ def crear_usuario():
     session['access_token'] = access_token
 
     flash("Usuario registrado exitosamente. Bienvenido a tu lista de tareas.", "success")
-    return redirect(url_for('vista_tareas'))
+    return redirect(url_for('task.vista_tareas'))
 
 
 # Login
@@ -76,4 +76,4 @@ def iniciar_sesion():
     session['access_token'] = access_token
     flash("Inicio de sesión exitoso", "success")
     
-    return redirect(url_for('vista_tareas'))
+    return redirect(url_for('task.vista_tareas'))
