@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Tareas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Mis Tareas</h1>
+
+        <!-- Lista de tareas -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title">Tareas</h3>
+                {% if tareas %}
+                    <ul class="list-group">
+                        {% for tarea in tareas %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ tarea.texto_tarea }}</strong>
+                                    <p class="mb-0">Estado: {{ tarea.estado }}</p>
+                                    <p class="mb-0">Categoría: {{ tarea.categoria }}</p>
+                                    <small>Fecha de creación: {{ tarea.fecha_creacion }}</small>
+                                    {% if tarea.fecha_tentativa_finalizacion %}
+                                        <small>, Finalización: {{ tarea.fecha_tentativa_finalizacion }}</small>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <a href="/tareas/{{ tarea.id }}/editar" class="btn btn-sm btn-primary me-2">Editar</a>
+                                    <form action="/tareas/{{ tarea.id }}" method="POST" style="display: inline;">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                                    </form>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No tienes tareas registradas.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Formulario para crear una nueva tarea -->
+        <div class="card shadow-sm mt-4">
+            <div class="card-body">
+                <h3 class="card-title">Crear Tarea</h3>
+                <form action="/tareas" method="POST">
+                    <div class="mb-3">
+                        <label for="texto_tarea" class="form-label">Texto de la Tarea</label>
+                        <input type="text" class="form-control" id="texto_tarea" name="texto_tarea" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fecha_tentativa_finalizacion" class="form-label">Fecha Tentativa de Finalización</label>
+                        <input type="date" class="form-control" id="fecha_tentativa_finalizacion" name="fecha_tentativa_finalizacion">
+                    </div>
+                    <div class="mb-3">
+                        <label for="categoria" class="form-label">Categoría</label>
+                        <select class="form-select" id="categoria" name="categoria">
+                            {% for categoria in categorias %}
+                                <option value="{{ categoria }}">{{ categoria }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success">Crear Tarea</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
