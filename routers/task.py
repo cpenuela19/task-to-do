@@ -15,7 +15,7 @@ def vista_tareas():
 
     from flask_jwt_extended import decode_token
     try:
-        user_id = decode_token(access_token)["sub"]  
+        user_id = decode_token(access_token)["sub"]
         print(f"ID del usuario autenticado: {user_id}")
     except Exception as e:
         flash("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.", "error")
@@ -24,7 +24,11 @@ def vista_tareas():
 
     tareas = Task.query.filter_by(ID_Usuario=int(user_id)).all()
     categorias = [cat.value for cat in CategoriaEnum]
-    return render_template('tareas.html', tareas=tareas, categorias=categorias)
+    
+    # Recupera el usuario y pásalo al template
+    usuario = Usuario.query.get_or_404(user_id)
+    
+    return render_template('tareas.html', tareas=tareas, categorias=categorias, usuario=usuario)
 
 
 @task_bp.route('/usuarios/<int:id_usuario>/tareas', methods=['GET'])

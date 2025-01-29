@@ -7,11 +7,25 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
 </head>
 <body class="bg-light">
-    <div class="container mt-5">
-        <h1 class="text-center mb-4">Mis Tareas</h1>
+
+    <div class="container mt-4">
+        <!-- Header con foto y nombre del usuario -->
+        <div class="d-flex align-items-center bg-white shadow-sm p-3 rounded">
+            <!-- Imagen de perfil -->
+            <img src="{{ usuario.get_imagen_perfil_url() }}" alt="Foto de perfil" class="rounded-circle border border-2 shadow-sm" width="50" height="50">
+            
+            <!-- Espacio entre imagen y texto -->
+            <div class="ms-3">
+                <h5 class="mb-0 fw-bold">{{ usuario.nombre_usuario }}</h5>
+                <small class="text-muted">Bienvenido a tu panel</small>
+            </div>
+        </div>
+
+        <!-- Título centrado -->
+        <h1 class="text-center mt-4">Mis Tareas</h1>
 
         <!-- Mensajes flash -->
-        <div class="container mt-3">
+        <div class="mt-3">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     <div class="alert-container">
@@ -88,6 +102,7 @@
             </div>
         </div>
     </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

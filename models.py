@@ -27,6 +27,8 @@ class Usuario(db.Model):
 
     tasks = db.relationship('Task', back_populates='usuario', cascade='delete-orphan')
 
+    def get_imagen_perfil_url(self):
+        return f"/static/{self.imagen_perfil}"
 
 #Modelo task
 
