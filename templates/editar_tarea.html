@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Tareas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Mis Tareas</h1>
+
+        <!-- Mensajes flash -->
+        <div class="container mt-3">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="alert-container">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Formulario para editar tarea -->
+        <div class="card shadow-sm mt-4">
+            <div class="card-body">
+                <h3 class="card-title">Editar Tarea</h3>
+                <form action="{{ url_for('task.actualizar_tarea', id=tarea.id) }}" method="POST">
+                    <div class="mb-3">
+                        <label for="texto_tarea" class="form-label">Texto de la Tarea</label>
+                        <input type="text" class="form-control" id="texto_tarea" name="texto_tarea" value="{{ tarea.texto_tarea }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fecha_tentativa_finalizacion" class="form-label">Fecha Tentativa de Finalización</label>
+                        <input type="date" class="form-control" id="fecha_tentativa_finalizacion" name="fecha_tentativa_finalizacion" value="{{ tarea.fecha_tentativa_finalizacion.strftime('%Y-%m-%d') if tarea.fecha_tentativa_finalizacion else '' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="estado" class="form-label">Estado</label>
+                        <select class="form-select" id="estado" name="estado">
+                            <option value="{{ EstadoEnum.PENDIENTE.value }}" {% if tarea.estado == EstadoEnum.PENDIENTE.value %} selected {% endif %}>Pendiente</option>
+                            <option value="{{ EstadoEnum.EN_PROGRESO.value }}" {% if tarea.estado == EstadoEnum.EN_PROGRESO.value %} selected {% endif %}>En Progreso</option>
+                            <option value="{{ EstadoEnum.FINALIZADO.value }}" {% if tarea.estado == EstadoEnum.FINALIZADO.value %} selected {% endif %}>Finalizado</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="categoria" class="form-label">Categoría</label>
+                        <select class="form-select" id="categoria" name="categoria">
+                            <option value="{{ CategoriaEnum.SIN_CATEGORIA.value }}" {% if tarea.categoria == CategoriaEnum.SIN_CATEGORIA.value %} selected {% endif %}>Sin Categoría</option>
+                            <option value="{{ CategoriaEnum.HOGAR.value }}" {% if tarea.categoria == CategoriaEnum.HOGAR.value %} selected {% endif %}>Hogar</option>
+                            <option value="{{ CategoriaEnum.TRABAJO.value }}" {% if tarea.categoria == CategoriaEnum.TRABAJO.value %} selected {% endif %}>Trabajo</option>
+                            <option value="{{ CategoriaEnum.UNIVERSIDAD.value }}" {% if tarea.categoria == CategoriaEnum.UNIVERSIDAD.value %} selected {% endif %}>Universidad</option>
+                            <option value="{{ CategoriaEnum.URGENTE.value }}" {% if tarea.categoria == CategoriaEnum.URGENTE.value %} selected {% endif %}>Urgente</option>
+                            <option value="{{ CategoriaEnum.OTROS.value }}" {% if tarea.categoria == CategoriaEnum.OTROS.value %} selected {% endif %}>Otros</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success">Actualizar Tarea</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

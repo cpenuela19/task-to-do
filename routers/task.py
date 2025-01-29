@@ -120,15 +120,33 @@ def actualizar_tarea(id):
     data = request.form
     texto_tarea = data.get("texto_tarea")
     estado = data.get("estado")
+    categoria = data.get("categoria")
+    fecha_tentativa_finalizacion = data.get("fecha_tentativa_finalizacion")
 
+    # Si el texto de la tarea está presente, actualízalo
     if texto_tarea:
         tarea.texto_tarea = texto_tarea
+    
+    # Si el estado está presente y es válido, actualízalo
     if estado and estado in [est.value for est in EstadoEnum]:
         tarea.estado = EstadoEnum(estado)
 
+    # Si la categoría está presente, actualízala
+    if categoria and categoria in [cat.value for cat in CategoriaEnum]:
+        tarea.categoria = CategoriaEnum(categoria)
+
+    # Si la fecha de finalización está presente, actualízala
+    if fecha_tentativa_finalizacion:
+        try:
+            tarea.fecha_tentativa_finalizacion = date.fromisoformat(fecha_tentativa_finalizacion)
+        except ValueError:
+            flash("Fecha tentativa inválida.", "error")
+            return redirect(url_for('task.vista_tareas'))
+    
     db.session.commit()
     flash("Tarea actualizada exitosamente.", "success")
     return redirect(url_for('task.vista_tareas'))
+
 
 # Eliminar una tarea
 @task_bp.route('/tareas/<int:id>/eliminar', methods=['POST'])
@@ -184,3 +202,24 @@ def obtener_tarea_por_id(id):
 
     flash(f"Tarea '{tarea.texto_tarea}' obtenida con éxito.", "info")
     return redirect(url_for('task.vista_tareas'))
+
+@task_bp.route('/tareas/<int:id>/editar', methods=['GET'])
+def editar_tarea(id):
+    access_token = session.get('access_token')
+    if not access_token:
+        flash("Debes iniciar sesión para realizar esta acción.", "error")
+        return redirect(url_for('index'))
+
+    try:
+        user_id = decode_token(access_token)["sub"]
+    except Exception as e:
+        flash("El token es inválido o ha expirado. Por favor, inicia sesión nuevamente.", "error")
+        return redirect(url_for('index'))
+
+    tarea = Task.query.get_or_404(id)
+    if tarea.ID_Usuario != int(user_id):
+        flash("No tienes permiso para editar esta tarea.", "error")
+        return redirect(url_for('task.vista_tareas'))
+
+    # Pasar EstadoEnum y CategoriaEnum al contexto de la plantilla
+    return render_template('editar_tarea.html', tarea=tarea, EstadoEnum=EstadoEnum, CategoriaEnum=CategoriaEnum)

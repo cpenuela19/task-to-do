@@ -45,9 +45,7 @@
                                 </div>
                                 <div>
                                     <!-- Botón de editar -->
-                                    <form action="{{ url_for('task.actualizar_tarea', id=tarea.id) }}" method="POST" style="display: inline;">
-                                        <input type="hidden" name="texto_tarea" value="{{ tarea.texto_tarea }}">
-                                        <input type="hidden" name="estado" value="{{ tarea.estado }}">
+                                    <form action="{{ url_for('task.editar_tarea', id=tarea.id) }}" method="GET" style="display: inline;">
                                         <button type="submit" class="btn btn-sm btn-primary">Editar</button>
                                     </form>
                                     <!-- Botón de eliminar -->

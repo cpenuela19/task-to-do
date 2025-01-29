@@ -6,6 +6,7 @@ from routers.usuario import usuario_bp
 from routers.task import task_bp
 from extensions import db, jwt
 import secrets
+from datetime import datetime
 
 app = Flask(__name__)
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -21,10 +22,11 @@ jwt.init_app(app)
 app.register_blueprint(usuario_bp, url_prefix='/usuarios')  
 app.register_blueprint(task_bp, url_prefix='/tareas')  
 
-@app.before_request
-def override_method():
-    if request.method == 'POST' and '_method' in request.form:
-        request.environ['REQUEST_METHOD'] = request.form['_method']
+@app.template_filter('date')
+def format_date(value, format='%Y-%m-%d'):
+    if isinstance(value, datetime):
+        return value.strftime(format)
+    return value
 
 @app.route('/')
 def index():
