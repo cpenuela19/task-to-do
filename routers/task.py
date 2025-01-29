@@ -99,40 +99,31 @@ def crear_tarea():
     flash("Tarea creada exitosamente.", "success")
     return redirect(url_for('task.vista_tareas'))
 
-# Actualizar una tarea
 @task_bp.route('/tareas/<int:id>/actualizar', methods=['POST'])
 def actualizar_tarea(id):
-    # Obtener el token de la sesión
     access_token = session.get('access_token')
     if not access_token:
         flash("Debes iniciar sesión para realizar esta acción.", "error")
         return redirect(url_for('index'))
 
-    # Decodificar el token para verificar autenticación
     try:
         user_id = decode_token(access_token)["sub"]
     except Exception as e:
         flash("El token es inválido o ha expirado. Por favor, inicia sesión nuevamente.", "error")
-        print(f"Error al decodificar el token: {e}")
         return redirect(url_for('index'))
 
-    # Buscar la tarea
     tarea = Task.query.get_or_404(id)
     if tarea.ID_Usuario != int(user_id):
         flash("No tienes permiso para actualizar esta tarea.", "error")
         return redirect(url_for('task.vista_tareas'))
 
-    # Actualizar los campos de la tarea
     data = request.form
     texto_tarea = data.get("texto_tarea")
+    estado = data.get("estado")
+
     if texto_tarea:
         tarea.texto_tarea = texto_tarea
-
-    estado = data.get("estado")
-    if estado:
-        if estado not in [est.value for est in EstadoEnum]:
-            flash("Estado inválido.", "error")
-            return redirect(url_for('task.vista_tareas'))
+    if estado and estado in [est.value for est in EstadoEnum]:
         tarea.estado = EstadoEnum(estado)
 
     db.session.commit()

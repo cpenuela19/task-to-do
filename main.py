@@ -1,4 +1,4 @@
-from flask import Flask, flash, jsonify, redirect, render_template, session, url_for
+from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
 import os
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from models import CategoriaEnum, Task
@@ -20,6 +20,11 @@ jwt.init_app(app)
 
 app.register_blueprint(usuario_bp, url_prefix='/usuarios')  
 app.register_blueprint(task_bp, url_prefix='/tareas')  
+
+@app.before_request
+def override_method():
+    if request.method == 'POST' and '_method' in request.form:
+        request.environ['REQUEST_METHOD'] = request.form['_method']
 
 @app.route('/')
 def index():
