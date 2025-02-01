@@ -24,10 +24,12 @@ def vista_tareas():
 
     tareas = Task.query.filter_by(ID_Usuario=int(user_id)).all()
     categorias = [cat.value for cat in CategoriaEnum]
-    
+    estados = [est.value for est in EstadoEnum]  # Agregar esta línea
+
     usuario = Usuario.query.get_or_404(user_id)
-    
-    return render_template('tareas.html', tareas=tareas, categorias=categorias, usuario=usuario)
+
+    return render_template('tareas.html', tareas=tareas, categorias=categorias, estados=estados, usuario=usuario)
+
 
 
 @task_bp.route('/usuarios/<int:id_usuario>/tareas', methods=['GET'])

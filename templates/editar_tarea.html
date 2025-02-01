@@ -9,8 +9,6 @@
 <body class="bg-light">
     <div class="container mt-5">
         <h1 class="text-center mb-4">Mis Tareas</h1>
-
-        <!-- Mensajes flash -->
         <div class="container mt-3">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
@@ -26,7 +24,6 @@
             {% endwith %}
         </div>
 
-        <!-- Formulario para editar tarea -->
         <div class="card shadow-sm mt-4">
             <div class="card-body">
                 <h3 class="card-title">Editar Tarea</h3>
