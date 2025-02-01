@@ -25,7 +25,6 @@ def vista_tareas():
     tareas = Task.query.filter_by(ID_Usuario=int(user_id)).all()
     categorias = [cat.value for cat in CategoriaEnum]
     
-    # Recupera el usuario y pásalo al template
     usuario = Usuario.query.get_or_404(user_id)
     
     return render_template('tareas.html', tareas=tareas, categorias=categorias, usuario=usuario)
@@ -42,13 +41,11 @@ def obtener_tareas(id_usuario):
 
 @task_bp.route('/crear-tarea', methods=['POST'])
 def crear_tarea():
-    # Obtener el token de la sesión
     access_token = session.get('access_token')
     if not access_token:
         flash("Debes iniciar sesión para realizar esta acción.", "error")
         return redirect(url_for('index'))
 
-    # Decodificar el token para obtener el ID del usuario
     from flask_jwt_extended import decode_token
     try:
         user_id = decode_token(access_token)["sub"]
@@ -57,14 +54,12 @@ def crear_tarea():
         print(f"Error al decodificar el token: {e}")
         return redirect(url_for('index'))
 
-    # Obtener los datos del formulario
     data = request.form
     texto_tarea = data.get("texto_tarea")
     fecha_tentativa_finalizacion = data.get("fecha_tentativa_finalizacion")
     categoria = data.get("categoria", CategoriaEnum.SIN_CATEGORIA.value)
     estado = data.get("estado", EstadoEnum.PENDIENTE.value)
 
-    # Validaciones
     if not texto_tarea:
         flash("El texto de la tarea es obligatorio.", "error")
         return redirect(url_for('task.vista_tareas'))
@@ -89,7 +84,6 @@ def crear_tarea():
     else:
         fecha_tentativa = None
 
-    # Crear la nueva tarea
     nueva_tarea = Task(
         texto_tarea=texto_tarea,
         fecha_tentativa_finalizacion=fecha_tentativa,
@@ -127,19 +121,15 @@ def actualizar_tarea(id):
     categoria = data.get("categoria")
     fecha_tentativa_finalizacion = data.get("fecha_tentativa_finalizacion")
 
-    # Si el texto de la tarea está presente, actualízalo
     if texto_tarea:
         tarea.texto_tarea = texto_tarea
     
-    # Si el estado está presente y es válido, actualízalo
     if estado and estado in [est.value for est in EstadoEnum]:
         tarea.estado = EstadoEnum(estado)
 
-    # Si la categoría está presente, actualízala
     if categoria and categoria in [cat.value for cat in CategoriaEnum]:
         tarea.categoria = CategoriaEnum(categoria)
 
-    # Si la fecha de finalización está presente, actualízala
     if fecha_tentativa_finalizacion:
         try:
             tarea.fecha_tentativa_finalizacion = date.fromisoformat(fecha_tentativa_finalizacion)
@@ -152,16 +142,13 @@ def actualizar_tarea(id):
     return redirect(url_for('task.vista_tareas'))
 
 
-# Eliminar una tarea
 @task_bp.route('/tareas/<int:id>/eliminar', methods=['POST'])
 def eliminar_tarea(id):
-    # Obtener el token de la sesión
     access_token = session.get('access_token')
     if not access_token:
         flash("Debes iniciar sesión para realizar esta acción.", "error")
         return redirect(url_for('index'))
 
-    # Decodificar el token para verificar autenticación
     try:
         user_id = decode_token(access_token)["sub"]
     except Exception as e:
@@ -169,28 +156,23 @@ def eliminar_tarea(id):
         print(f"Error al decodificar el token: {e}")
         return redirect(url_for('index'))
 
-    # Buscar la tarea
     tarea = Task.query.get_or_404(id)
     if tarea.ID_Usuario != int(user_id):
         flash("No tienes permiso para eliminar esta tarea.", "error")
         return redirect(url_for('task.vista_tareas'))
 
-    # Eliminar la tarea
     db.session.delete(tarea)
     db.session.commit()
     flash("Tarea eliminada exitosamente.", "success")
     return redirect(url_for('task.vista_tareas'))
 
-# Obtener una tarea por ID
 @task_bp.route('/tareas/<int:id>', methods=['GET'])
 def obtener_tarea_por_id(id):
-    # Obtener el token de la sesión
     access_token = session.get('access_token')
     if not access_token:
         flash("Debes iniciar sesión para realizar esta acción.", "error")
         return redirect(url_for('index'))
 
-    # Decodificar el token para verificar autenticación
     try:
         user_id = decode_token(access_token)["sub"]
     except Exception as e:
@@ -198,7 +180,6 @@ def obtener_tarea_por_id(id):
         print(f"Error al decodificar el token: {e}")
         return redirect(url_for('index'))
 
-    # Buscar la tarea
     tarea = Task.query.get_or_404(id)
     if tarea.ID_Usuario != int(user_id):
         flash("No tienes permiso para acceder a esta tarea.", "error")
@@ -225,5 +206,4 @@ def editar_tarea(id):
         flash("No tienes permiso para editar esta tarea.", "error")
         return redirect(url_for('task.vista_tareas'))
 
-    # Pasar EstadoEnum y CategoriaEnum al contexto de la plantilla
     return render_template('editar_tarea.html', tarea=tarea, EstadoEnum=EstadoEnum, CategoriaEnum=CategoriaEnum)

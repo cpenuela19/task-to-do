@@ -31,7 +31,6 @@ class Usuario(db.Model):
         return f"/static/{self.imagen_perfil}"
 
 #Modelo task
-
 class Task(db.Model):
     __tablename__ = 'task'
     id = db.Column(db.Integer, primary_key=True)
