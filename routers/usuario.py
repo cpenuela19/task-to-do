@@ -32,7 +32,6 @@ def crear_usuario():
     if not imagen_perfil:
         imagen_perfil = 'default-picture.jpg'
 
-    # Hashear la contraseña y crear el usuario
     hashed_password = generate_password_hash(contrasena)
     nuevo_usuario = Usuario(
         nombre_usuario=nombre_usuario,
